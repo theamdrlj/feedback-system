@@ -1050,7 +1050,12 @@
                 </div>
                 <div class="ballot-date" id="ballotDate">—</div>
               </div>
-
+              
+              <div class="ballot-section" id="lessonReportSection" style="display:none;">
+                <div class="ballot-section-head" style="color:var(--ink-soft);">Lesson Report</div>
+                <div id="lessonReportPreview" class="lesson-report-scope"></div>
+              </div>
+              
               <div class="ballot-section" id="debateBallotSection" style="display:none;">
                 <div class="ballot-section-head" style="color:var(--ink-soft);">Debate Ballot</div>
                 <div id="debateBallotPreview"></div>
@@ -1071,10 +1076,7 @@
                 <div id="improveList"></div>
               </div>
 
-              <div class="ballot-section" id="lessonReportSection" style="display:none;">
-                <div class="ballot-section-head" style="color:var(--ink-soft);">Lesson Report</div>
-                <div id="lessonReportPreview" class="lesson-report-scope"></div>
-              </div>
+            
             </div>
           </div>
           <div class="ballot-actions">
@@ -1977,7 +1979,16 @@ function buildPdf(student, overviewImg, ballotData, reportImg){
   doc.setLineWidth(0.75);
   doc.line(marginX, y, pageWidth - marginX, y);
   y += 24;
-
+if (reportImg){
+    const pageHeight = doc.internal.pageSize.getHeight();
+    if (y > pageHeight - 100){ doc.addPage(); y = 56; }
+    doc.setFont(F_SEMI, 'normal');
+    doc.setFontSize(10.5);
+    doc.setTextColor(inkSoft[0],inkSoft[1],inkSoft[2]);
+    doc.text('LESSON REPORT', marginX, y);
+    y += 16;
+    y = placePaginatedImage(doc, reportImg.imgEl, reportImg.w, reportImg.h, marginX, contentWidth, y, 56, 60);
+  }
   if (ballotData && ballotData.enabled){
     doc.setFont(F_SEMI, 'normal');
     doc.setFontSize(10.5);
@@ -2140,17 +2151,7 @@ function placePaginatedImage(doc, imgEl, srcW, srcH, marginX, contentWidth, star
   section('Strengths', navy, strengthTexts);
   section('Areas for Improvement', gold, improveTexts);
 
-  if (reportImg){
-    const pageHeight = doc.internal.pageSize.getHeight();
-    if (y > pageHeight - 100){ doc.addPage(); y = 56; }
-    doc.setFont(F_SEMI, 'normal');
-    doc.setFontSize(10.5);
-    doc.setTextColor(inkSoft[0],inkSoft[1],inkSoft[2]);
-    doc.text('LESSON REPORT', marginX, y);
-    y += 16;
-    y = placePaginatedImage(doc, reportImg.imgEl, reportImg.w, reportImg.h, marginX, contentWidth, y, 56, 60);
-  }
-
+  
   const pageHeight = doc.internal.pageSize.getHeight();
   let footerY = y + 20;
   if (footerY > pageHeight - 16){ doc.addPage(); footerY = 70; }
